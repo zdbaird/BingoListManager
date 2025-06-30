@@ -22,6 +22,9 @@ class EntryManagerApp:
         self.sort_ascending = True
         self.current_file = None
 
+        # Determine lists folder
+        self.lists_folder = self.get_lists_folder()
+
         self.setup_ui()
         self.setup_shortcuts()
         # self.load_initial_list()  # Removed: No default list loaded
@@ -31,6 +34,18 @@ class EntryManagerApp:
                 "Missing Dependency",
                 "pyperclip is not installed. Clipboard features will be disabled."
             )
+
+    def get_lists_folder(self):
+        # Try to read lists_folder.txt from the app directory
+        app_dir = os.path.dirname(sys.argv[0])
+        config_path = os.path.join(app_dir, "lists_folder.txt")
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as f:
+                folder = f.read().strip()
+                if folder and os.path.isdir(folder):
+                    return folder
+        # Fallback: use current working directory
+        return os.getcwd()
 
     def setup_ui(self):
         # Menu bar
@@ -229,13 +244,19 @@ class EntryManagerApp:
             messagebox.showerror("Clipboard Error", f"Could not copy to clipboard:\n{e}")
 
     def load_list(self):
-        path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
+        path = filedialog.askopenfilename(
+            filetypes=[("JSON Files", "*.json")],
+            initialdir=self.lists_folder
+        )
         if path:
             self.load_list_from_file(path)
             self.current_file = path
 
     def import_csv(self):
-        path = filedialog.askopenfilename(filetypes=[("CSV Files", "*.csv")])
+        path = filedialog.askopenfilename(
+            filetypes=[("CSV Files", "*.csv")],
+            initialdir=self.lists_folder
+        )
         if not path:
             return
         try:
@@ -267,7 +288,11 @@ class EntryManagerApp:
             self.save_list_as()
 
     def save_list_as(self):
-        path = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON Files", "*.json")])
+        path = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON Files", "*.json")],
+            initialdir=self.lists_folder
+        )
         if path:
             self.current_file = path
             self.save_list_to_file(path)
