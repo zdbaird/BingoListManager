@@ -2,7 +2,15 @@ import tkinter as tk
 from tkinter import simpledialog, filedialog, messagebox
 import json
 import os
-import pyperclip
+import subprocess
+import sys
+
+# Try to import pyperclip, handle if missing
+try:
+    import pyperclip
+    HAS_PYPERCLIP = True
+except ImportError:
+    HAS_PYPERCLIP = False
 
 class EntryManagerApp:
     def __init__(self, root):
@@ -16,7 +24,13 @@ class EntryManagerApp:
 
         self.setup_ui()
         self.setup_shortcuts()
-        self.load_initial_list()
+        # self.load_initial_list()  # Removed: No default list loaded
+
+        if not HAS_PYPERCLIP:
+            messagebox.showwarning(
+                "Missing Dependency",
+                "pyperclip is not installed. Clipboard features will be disabled."
+            )
 
     def setup_ui(self):
         # Menu bar
@@ -26,6 +40,8 @@ class EntryManagerApp:
         file_menu.add_command(label="Import CSV", command=self.import_csv)
         file_menu.add_command(label="Save", command=self.save_list, accelerator="Ctrl+S")
         file_menu.add_command(label="Save As", command=self.save_list_as, accelerator="Ctrl+Shift+S")
+        file_menu.add_separator()
+        file_menu.add_command(label="Open Lists Folder", command=self.open_lists_folder)
         self.menu.add_cascade(label="File", menu=file_menu)
         self.root.config(menu=self.menu)
 
@@ -39,6 +55,7 @@ class EntryManagerApp:
         self.search_entry = tk.Entry(top_frame, textvariable=self.search_var)
         self.search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         tk.Button(top_frame, text="Sort A-Z/Z-A", command=self.toggle_sort).pack(side=tk.LEFT, padx=5)
+        tk.Button(top_frame, text="Batch Remove", command=self.batch_remove_dialog).pack(side=tk.LEFT, padx=5)
 
         # Main layout
         main_frame = tk.Frame(self.root)
@@ -156,6 +173,9 @@ class EntryManagerApp:
 
     def remove_entry(self, name):
         if name in self.entry_vars:
+            # Confirmation dialog before removal
+            if not messagebox.askyesno("Confirm Removal", f"Remove entry '{name}'?"):
+                return
             frame = next((f for n, f in self.entries if n == name), None)
             if frame:
                 frame.destroy()
@@ -168,6 +188,28 @@ class EntryManagerApp:
         if selected:
             self.remove_entry(selected)
 
+    def batch_remove_dialog(self):
+        # Dialog for multi-select removal
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Batch Remove Entries")
+        dialog.geometry("300x400")
+        tk.Label(dialog, text="Select entries to remove:").pack(anchor="w", padx=10, pady=5)
+        vars = {}
+        for name, _ in self.entries:
+            var = tk.BooleanVar()
+            tk.Checkbutton(dialog, text=name, variable=var).pack(anchor="w", padx=10)
+            vars[name] = var
+
+        def confirm():
+            to_remove = [name for name, var in vars.items() if var.get()]
+            if to_remove and messagebox.askyesno("Confirm Batch Removal", f"Remove {len(to_remove)} entries?"):
+                for name in to_remove:
+                    self.remove_entry(name)
+            dialog.destroy()
+
+        tk.Button(dialog, text="Remove Selected", command=confirm).pack(pady=10)
+        tk.Button(dialog, text="Cancel", command=dialog.destroy).pack()
+
     def update_json(self):
         enabled = [{"name": n} for n, _ in self.entries if self.entry_vars[n].get()]
         self.json_text.configure(state='normal')
@@ -177,13 +219,14 @@ class EntryManagerApp:
 
     def copy_json(self):
         enabled = [{"name": n} for n, _ in self.entries if self.entry_vars[n].get()]
-        pyperclip.copy(json.dumps(enabled, indent=4))
-        messagebox.showinfo("Copied", "JSON copied to clipboard!")
-
-    def load_initial_list(self):
-        default_path = "default_entries.json"
-        if os.path.exists(default_path):
-            self.load_list_from_file(default_path)
+        if not HAS_PYPERCLIP:
+            messagebox.showerror("Clipboard Error", "pyperclip is not installed. Cannot copy to clipboard.")
+            return
+        try:
+            pyperclip.copy(json.dumps(enabled, indent=4))
+            messagebox.showinfo("Copied", "JSON copied to clipboard!")
+        except Exception as e:
+            messagebox.showerror("Clipboard Error", f"Could not copy to clipboard:\n{e}")
 
     def load_list(self):
         path = filedialog.askopenfilename(filetypes=[("JSON Files", "*.json")])
@@ -257,6 +300,18 @@ class EntryManagerApp:
         for _, frame in self.entries:
             frame.pack_forget()
         self.filter_entries()
+
+    def open_lists_folder(self):
+        folder = os.getcwd()
+        try:
+            if os.name == "nt":
+                os.startfile(folder)
+            elif sys.platform == "darwin":
+                subprocess.Popen(["open", folder])
+            else:
+                subprocess.Popen(["xdg-open", folder])
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not open folder:\n{e}")
 
 if __name__ == "__main__":
     root = tk.Tk()
