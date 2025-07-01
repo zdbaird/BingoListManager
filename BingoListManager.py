@@ -92,6 +92,7 @@ class EntryManagerApp:
         self.root.bind('<Control-S>', lambda e: self.save_list_as())
         self.root.bind('<Control-o>', lambda e: self.load_list())
         self.root.bind('<Control-f>', lambda e: self.focus_search())
+        self.root.bind('<Control-n>', lambda e: self.add_entry())
 
     def focus_search(self):
         self.search_entry.focus_set()
