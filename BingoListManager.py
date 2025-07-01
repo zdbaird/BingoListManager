@@ -42,8 +42,10 @@ class EntryManagerApp:
                 folder = f.read().strip()
                 if folder and os.path.isdir(folder):
                     return folder
-        # Fallback: use current working directory
-        return os.getcwd()
+        # Fallback: use 'lists' in the app directory
+        lists_dir = os.path.join(app_dir, "lists")
+        os.makedirs(lists_dir, exist_ok=True)
+        return lists_dir
 
     def setup_ui(self):
         # Remove the menu bar
@@ -152,7 +154,7 @@ class EntryManagerApp:
         enabled = [{"name": n} for n, _ in self.entries if self.entry_vars[n].get()]
         # Default to /lists directory in the root of the drive/project
         root_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
-        default_dir = os.path.join(root_dir, "..", "lists")
+        default_dir = os.path.join(root_dir, "lists")
         default_dir = os.path.abspath(default_dir)
         os.makedirs(default_dir, exist_ok=True)
         path = filedialog.asksaveasfilename(
@@ -328,7 +330,7 @@ class EntryManagerApp:
     def save_list_as(self):
         # Save to /lists in the root directory
         root_dir = os.path.abspath(os.path.dirname(sys.argv[0]))
-        default_dir = os.path.join(root_dir, "..", "lists")
+        default_dir = os.path.join(root_dir, "lists")
         default_dir = os.path.abspath(default_dir)
         os.makedirs(default_dir, exist_ok=True)
         path = filedialog.asksaveasfilename(
