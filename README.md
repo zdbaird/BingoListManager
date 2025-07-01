@@ -13,7 +13,7 @@ BingoListManager is a simple desktop application designed to help you create, ed
 The program is intended for anyone who wants to organize and customize bingosync games easily, without needing to manually manage text files or spreadsheets.
 
 ## How to Use
-- Download the latest installer from the GitHub Releases page.
+- Download the latest installer from the GitHub Releases page [here](https://github.com/zdbaird/BingoListManager/releases).
 - Run the installer to install BingoListManager on your Windows system.
 
 ## Building the Installer
