@@ -13,7 +13,7 @@ SolidCompression=yes
 
 [Files]
 Source: "release_files\BingoListManager.exe"; DestDir: "{app}"; Flags: ignoreversion
-; Source: "release_files\BingoListManager.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "release_files\BingoListManager.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "release_files\lists"; DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
 
 [Icons]
