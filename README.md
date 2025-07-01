@@ -4,7 +4,7 @@ BingoListManager is a tool for managing bingo lists that I barely did shit for a
 
 ## What Does BingoListManager Do?
 BingoListManager is a simple desktop application designed to help you create, edit, and manage lists for bingo games. It allows you to:
-- Create new bingo lists for any theme to be used on (Bingosync)[https://bingosync.com] or other bingo platforms (if the format is supported)
+- Create new bingo lists for any theme to be used on [Bingosync](https://bingosync.com) or other bingo platforms (if the format is supported)
 - Edit existing lists by adding, removing, or reordering items
 - Save and load bingo lists for future use
 - Save states for lists to adjust which items are included in the game
