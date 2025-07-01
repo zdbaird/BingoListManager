@@ -26,3 +26,9 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription
 
 [Run]
 Filename: "{app}\BingoListManager.exe"; Description: "Launch Bingo List Manager"; Flags: nowait postinstall skipifsilent
+
+[Registry]
+Root: HKCR; Subkey: ".bingo"; ValueType: string; ValueData: "BingoListManager.bingo"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "BingoListManager.bingo"; ValueType: string; ValueData: "Bingo List File"; Flags: uninsdeletekey
+Root: HKCR; Subkey: "BingoListManager.bingo\DefaultIcon"; ValueType: string; ValueData: "{app}\BingoListManager.ico"
+Root: HKCR; Subkey: "BingoListManager.bingo\shell\open\command"; ValueType: string; ValueData: """{app}\BingoListManager.exe"" ""%1"""

@@ -285,7 +285,7 @@ class EntryManagerApp:
 
     def load_list(self):
         path = filedialog.askopenfilename(
-            filetypes=[("JSON Files", "*.json")],
+            filetypes=[("Bingo List Files", "*.bingo")],
             initialdir=self.lists_folder
         )
         if path:
@@ -334,8 +334,8 @@ class EntryManagerApp:
         default_dir = os.path.abspath(default_dir)
         os.makedirs(default_dir, exist_ok=True)
         path = filedialog.asksaveasfilename(
-            defaultextension=".json",
-            filetypes=[("JSON Files", "*.json")],
+            defaultextension=".bingo",
+            filetypes=[("Bingo List Files", "*.bingo")],
             initialdir=default_dir
         )
         if path:
@@ -414,7 +414,30 @@ class EntryManagerApp:
         self.update_json()
 
 if __name__ == "__main__":
+    import os
+    import sys
+    import tkinter as tk
+
     root = tk.Tk()
-    root.iconbitmap("BingoListManager.ico")  # Path to your .ico file
+
+    # Determine the directory where the executable or script resides
+    if getattr(sys, 'frozen', False):
+        app_dir = os.path.dirname(sys.executable)
+    else:
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+
+    icon_path = os.path.join(app_dir, "BingoListManager.ico")
+    try:
+        root.iconbitmap(icon_path)
+    except Exception:
+        pass  # Ignore icon errors, continue running
+
     app = EntryManagerApp(root)
+
+    # If a .bingo file is passed as an argument, open it using the full path
+    if len(sys.argv) > 1 and sys.argv[1].lower().endswith(".bingo"):
+        bingo_path = os.path.abspath(sys.argv[1])
+        app.load_list_from_file(bingo_path)
+        app.current_file = bingo_path
+
     root.mainloop()
