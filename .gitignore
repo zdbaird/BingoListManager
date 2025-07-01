@@ -1,10 +1,19 @@
+# Ignore Windows executables and installers
+*.exe
+*.ico
+*.iss
+# Ignore release and build folders
+release_files/
+dist/
+build/
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[codz]
-*$py.class
-
-# C extensions
-*.so
+*.py[cod]
+# VS Code settings
+.vscode/
+# OS files
+.DS_Store
+Thumbs.db
 
 # Distribution / packaging
 .Python
