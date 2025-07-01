@@ -1,6 +1,7 @@
 # BingoListManager
 
 BingoListManager is a tool for managing bingo lists that I barely did shit for and had copilot make 90% of (including this readme).
+I've spent more time on this than it'd take to manage, edit, and add to the google sheets page I was using initially.
 
 ## What Does BingoListManager Do?
 BingoListManager is a simple desktop application designed to help you create, edit, and manage lists for bingo games. It allows you to:
